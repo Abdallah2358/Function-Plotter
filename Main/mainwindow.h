@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 #include <QDebug>
-
+#include<QVBoxLayout>
+#include<QLabel>
 #include"../HelperClasses/plot.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,6 +24,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Plot *plot;
-
+    void clearVBoxLayout(QVBoxLayout *vbox );
 };
 #endif // MAINWINDOW_H

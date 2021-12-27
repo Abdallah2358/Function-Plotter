@@ -4,13 +4,18 @@ FunctionObj::FunctionObj()
 {
 }
 
-FunctionObj::FunctionObj(QString inFuncStr, QString inMin, QString inMax)
+FunctionObj::FunctionObj(QString inFuncStr, QString inMin, QString inMax, QVBoxLayout *warningLayout)
 {
     qDebug() << inFuncStr << ", " << inMin << " ," << inMax;
     this->funcStr = inFuncStr;
     this->smax = inMax;
     this->smin = inMin;
-
+    this->warningLayout = warningLayout;
+    this->warningBox->setStyleSheet(
+        QString(""
+                "QGroupBox{border:2px solid gray; color : red ;border-radius:5px;margin-top: 1ex;}"
+                " QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}"));
+    this->warningBox->setLayout(this->vbox);
 }
 
 int FunctionObj::ValidateFunc()
@@ -20,28 +25,45 @@ int FunctionObj::ValidateFunc()
     if (funcStr.isEmpty())
     {
         qDebug() << "The Function can not be empty";
+        crreateWarninig("The Function can not be empty");
+        showWarning();
         return 1; // 1 indicated empty string
         //give message "Empty Input"
     }
-
     if (funcStr.contains(" "))
     {
         qDebug() << "The Function can not contain spaces";
+        crreateWarninig("The Function can not contain spaces");
+        showWarning();
         return 2;
     }
     QRegExp checkInputExp("[\\dx+\\-\\*/^]*");
     if (!checkInputExp.exactMatch(funcStr))
     {
         qDebug() << "The Function can only contain numbers, \"x\"and this operators + - / * ^";
-        qDebug() << "fun str : " << funcStr;
+        crreateWarninig("The Function can only contain numbers, \"x\"and this operators + - / * ^");
+        showWarning();
         return 3;
     }
-    if(!isValidMin())
+    if (!isValidMin())
+    {
+        crreateWarninig("please provide a valid decimal number in Min");
+        showWarning();
         return 4;
-    if(!isValidMax())
+    }
+    if (!isValidMax())
+    {
+        crreateWarninig("please provide a valid decimal number in Max");
+         showWarning();
         return 5;
-    if(!isValidRange())
+    }
+    if (!isValidRange())
+    {
+        crreateWarninig("please provide a valid range Max > Min");
+        showWarning();
         return 6;
+    }
+    clearWarning();
     qDebug() << "validation done fun str : " << funcStr;
     return 0;
 }
@@ -106,13 +128,12 @@ bool FunctionObj::isValidRange()
 double FunctionObj::calculateResult(double x)
 {
 
-
     QStringList::iterator it = splitFunctionList.begin();
 
     QVector<double> numVector;
     QVector<QString> operatorVector;
     bool skipFlag = false;
-    qDebug() << "start of calclate of x = "<<x;
+    qDebug() << "start of calclate of x = " << x;
     while (it != splitFunctionList.end())
     {
         bool isNegative = false;
@@ -122,18 +143,20 @@ double FunctionObj::calculateResult(double x)
             *it = QString::number(x);
         // qDebug() <<" done checking x";
         (*it).toDouble(&isNegative);
-        if ( !isNegative &&(*it).contains(QRegExp("[+\\-\\*\\/]")) )
+        if (!isNegative && (*it).contains(QRegExp("[+\\-\\*\\/]")))
         {
-              qDebug() <<isNegative;
+            qDebug() << isNegative;
             if (*it == "+" || *it == "-")
             {
-               qDebug() << "operator appended : "<< *it<<"  ,1";
+                qDebug() << "operator appended : " << *it << "  ,1";
                 operatorVector.append(*it);
             }
-            else  if ((*it).contains("e")) {
+            else if ((*it).contains("e"))
+            {
                 numVector.append((*it).toDouble());
                 qDebug() << "skiped  :" << *it;
-            }else
+            }
+            else
             {
                 skipFlag = true;
                 if (operatorVector.empty())
@@ -141,14 +164,14 @@ double FunctionObj::calculateResult(double x)
                     if (*(it + 1) == "x")
                         *(it + 1) = QString::number(x);
 
-                    qDebug() << numVector.last() << *it << (*(it + 1)).toDouble() <<"  ,2";
+                    qDebug() << numVector.last() << *it << (*(it + 1)).toDouble() << "  ,2";
                     numVector.append(operationResult(numVector.takeLast(), (*(it + 1)).toDouble(), *it));
                 }
                 else
                 {
                     if (*(it + 1) == "x")
                         *(it + 1) = QString::number(x);
-                    qDebug() << numVector.last() << *it << (*(it + 1)).toDouble()<<"  ,3";
+                    qDebug() << numVector.last() << *it << (*(it + 1)).toDouble() << "  ,3";
                     numVector.append(operationResult(numVector.takeLast(), (*(it + 1)).toDouble(), *it));
                 }
             }
@@ -166,19 +189,19 @@ double FunctionObj::calculateResult(double x)
                 }
                 numVector.append((*it).toDouble());
                 qDebug() << "string in func" << *it << "its converstion" << numVector.last();
-               // qDebug() << "vec size" << numVector.size();
+                // qDebug() << "vec size" << numVector.size();
             }
             skipFlag = false;
         }
         ++it;
     }
-  qDebug() <<"done appending";
+    qDebug() << "done appending";
     while (!operatorVector.empty())
     {
         //qDebug() <<"in while appending";
         double op2 = numVector.takeLast();
         double op1 = numVector.takeLast();
-        qDebug() << op1 << operatorVector.last() <<op2 <<" = "<<operationResult(op1, op2, operatorVector.last())<<"  ,4";
+        qDebug() << op1 << operatorVector.last() << op2 << " = " << operationResult(op1, op2, operatorVector.last()) << "  ,4";
         numVector.append(operationResult(op1, op2, operatorVector.takeLast()));
     }
     qDebug() << "result = " << numVector.last();
@@ -195,7 +218,7 @@ void FunctionObj::populateVectors()
         handlePower(j);
         x.append(j);
         y.append(calculateResult(j));
-        funcStr=QString(temp);
+        funcStr = QString(temp);
     }
 
     qDebug() << "populate vector done";
@@ -262,4 +285,36 @@ double FunctionObj::operationResult(double op1, double op2, QString op)
     if (op == "*")
         return op1 * op2;
     return 0;
+}
+//separting this functions allows me to add multiple warning in the same box
+QString FunctionObj::crreateWarninig(QString str)
+{
+    if (warningLayout != nullptr)
+    {
+        vbox->addWidget(new QLabel(str));
+        qDebug() << str;
+        return str;
+    }
+    qDebug() << "please provide layout";
+    return "please provide layout";
+}
+void FunctionObj::showWarning()
+{
+    clearWarning();
+    warningLayout->addWidget(warningBox);
+}
+void FunctionObj::clearWarning(){
+     clearLayout(warningLayout);
+}
+void FunctionObj::clearLayout(QLayout *layout)
+{
+    QLayoutItem * item;
+    QLayout * sublayout;
+    QWidget * widget;
+    while ((item = layout->takeAt(0))) {
+        if ((sublayout = item->layout()) != 0) {clearLayout(sublayout);}
+        else if ((widget = item->widget()) != 0) {widget->hide(); delete widget;}
+        else {delete item;
+            return;}
+    }
 }

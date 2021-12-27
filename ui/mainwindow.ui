@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>908</width>
+    <width>1076</width>
     <height>361</height>
    </rect>
   </property>
@@ -15,6 +15,19 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="7" column="0">
+     <widget class="QPushButton" name="plotBtn">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text">
+       <string>Plot</string>
+      </property>
+     </widget>
+    </item>
     <item row="0" column="0">
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
@@ -113,6 +126,7 @@
          <property name="font">
           <font>
            <pointsize>9</pointsize>
+           <weight>75</weight>
            <bold>true</bold>
           </font>
          </property>
@@ -131,6 +145,7 @@
             <property name="font">
              <font>
               <pointsize>10</pointsize>
+              <weight>50</weight>
               <bold>false</bold>
              </font>
             </property>
@@ -143,19 +158,6 @@
         </widget>
        </item>
       </layout>
-     </widget>
-    </item>
-    <item row="7" column="0">
-     <widget class="QPushButton" name="plotBtn">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text">
-       <string>Plot</string>
-      </property>
      </widget>
     </item>
     <item row="8" column="0">
@@ -191,6 +193,9 @@
       </layout>
      </widget>
     </item>
+    <item row="9" column="0">
+     <layout class="QVBoxLayout" name="warnLayout"/>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -198,8 +203,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>908</width>
-     <height>29</height>
+     <width>1076</width>
+     <height>20</height>
     </rect>
    </property>
   </widget>
