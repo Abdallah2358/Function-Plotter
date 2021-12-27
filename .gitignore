@@ -1,0 +1,4 @@
+#prevent saving builds
+/build*
+.vscode
+*.pro.*
