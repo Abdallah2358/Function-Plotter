@@ -17,13 +17,18 @@ private slots:
     void validateRange();
     void splitWithDelimiter_data();
     void splitWithDelimiter();
+    void handlePower_data();
+    void handlePower();
+
 };
+
 tst_FuncObjc::tst_FuncObjc()
 {
 }
 tst_FuncObjc::~tst_FuncObjc()
 {
 }
+
 void tst_FuncObjc::validateFunStr_data()
 {
 
@@ -54,7 +59,6 @@ void tst_FuncObjc::validateRange()
 }
 
 void tst_FuncObjc::splitWithDelimiter_data(){
-
     QTest::addColumn<QString>("string");
     QTest::addColumn<QStringList>("result");
     QTest::newRow("Empty string") << "" << QStringList({""});
@@ -68,6 +72,32 @@ void tst_FuncObjc::splitWithDelimiter()
     QFETCH(QString, string);
     QFETCH(QStringList, result);
     QCOMPARE(f.splitWithDelimiter(string), result);
+}
+
+void tst_FuncObjc::handlePower_data(){
+    QTest::addColumn<QString>("string");
+    QTest::addColumn<double>("x");
+    QTest::addColumn<double>("result");
+    QTest::newRow("Empty string") << "" << 0.0 << 0.0;
+    QTest::newRow("1 level of power") << "5^2" << 0.0 << pow(5,2);
+    QTest::newRow("2 level of power") << "2^2^2" << 0.0 << pow(2,pow(2,2));
+    QTest::newRow("3 level of power") << "2^2^2^2" << 0.0 << pow(2,pow(2,pow(2,2)));
+    QTest::newRow("1 level of power of negative values") << "-5^2" << 0.0 << pow(-5,2);
+    QTest::newRow("1 level of power of negative values") << "5^-2" << 0.0 << pow(5,-2);
+    QTest::newRow("1 level of power of floating point") << "5.2^2" << 0.0 << pow(5.2,2);
+    QTest::newRow("1 level of power of floating point") << "5^2.2" << 0.0 << pow(5,2.2);
+    QTest::newRow("1 level of power of floating point") << "5.2^2.2" << 0.0 << pow(5.2,2.2);
+    QTest::newRow("replace x in power") << "x^2" << 3.0 << pow(3,2);
+    QTest::newRow("replace x in power") << "2^x" << 3.0 << pow(2,3);
+    QTest::newRow("replace x of negative values in power") << "x^2" << -3.0 << pow(-3,2);
+    QTest::newRow("replace x of negative values in power") << "2^x" << -3.0 << pow(2,-3);
+}
+
+void tst_FuncObjc::handlePower(){
+    QFETCH(QString, string);
+    QFETCH(double, x);
+    QFETCH(double, result);
+    QCOMPARE(f.handlePower(string , x), result);
 }
 
 QTEST_MAIN(tst_FuncObjc)
