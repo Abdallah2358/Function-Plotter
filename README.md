@@ -1,9 +1,11 @@
 # [**Function Plotter**](https://github.com/Abdallah2358/Function-Plotter)
-
 ## Description:
 This is Desktop Application with a simple UI to plot simple functions with support of these operators [ + - * / ^]
 Built with QT in C++.
 
+## Overview of the application
+<![1](images/1.png)>
+<![1](images/2.png)>
 
 ## Getting started
 ### Requirements and pre-requisites
@@ -20,7 +22,8 @@ The tests are run by using Qt Creator by opening the tst_className.pro from test
 Example : [test_funcObj.pro](TestingHelperClasses/test_funcObj/test_funcObj.pro)
 
 There are provided 23 tests provided in the [tst_funcobj.cpp](TestingHelperClasses/test_funcObj/tst_funcobj.cpp).
-IT is a working progress.
+
+It is a working progress.
 
 ### Project Structure
       │   .gitignore
