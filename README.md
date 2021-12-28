@@ -1,7 +1,7 @@
 
 # [**Function Plotter**](https://github.com/Abdallah2358/Function-Plotter)
 ## **Description**:
-This is Desktop Application with a simple UI to plot simple functions with support of these operators [ + - * / ^]
+> This is Desktop Application with a simple UI to plot simple functions with support of these operators ``[ + - * / ^]``
 Built with QT in C++.
 
 ## **Overview of the application**
@@ -9,22 +9,22 @@ Built with QT in C++.
 ![1](images/2.png)
 
 ## **Getting started**
-### Requirements and pre-requisites
-To effectively initialize this project, Developers needs to have [Qt 5.12](https://www.qt.io/offline-installers) with the suitable Mingw build kit on their machines and [Qt Creator](https://www.qt.io/offline-installers) to build the project.
+>### Requirements and pre-requisites
+>To effectively initialize this project, Developers needs to have [Qt 5.12](https://www.qt.io/offline-installers) with the suitable Mingw build kit on their machines and [Qt Creator](https://www.qt.io/offline-installers) to build the project.
 
-To open the project in ``Qt Creator`` simply open the [task1.pro](task1.pro).
+
+>### Start developing 
+>To open the project in ``Qt Creator`` simply open the [task1.pro](task1.pro).
 
 
 ### **Tests**
-The tests are written using the [**Qt Test**](https://doc.qt.io/qt-5/qttest-index.html) to test helper function of the project. 
+- The tests are written using the [**Qt Test**](https://doc.qt.io/qt-5/qttest-index.html) to test helper function of the project. 
 
-The tests are run by using Qt Creator by opening the tst_className.pro from testing project in the [TestingHelperClasses](TestingHelperClasses/) folder.
+- The tests are run by using Qt Creator by opening the tst_className.pro from testing project in the [TestingHelperClasses](TestingHelperClasses/) folder.
 
-Example : [test_funcObj.pro](TestingHelperClasses/test_funcObj/test_funcObj.pro)
+- There are provided 23 tests provided in the [tst_funcobj.cpp](TestingHelperClasses/test_funcObj/tst_funcobj.cpp).
 
-There are provided 23 tests provided in the [tst_funcobj.cpp](TestingHelperClasses/test_funcObj/tst_funcobj.cpp).
-
-It is a working progress.
+  _Tests are still a working progress._
 
 ### **Project Structure**
       │   .gitignore
@@ -56,14 +56,15 @@ It is a working progress.
             mainwindow.ui
             plot.ui
 
-**This structure has 4 main folders/directories :**
+#### **This structure has 4 main folders/directories :**
+<br> 
 
-[**HelperClasses**](HelperClasses/) which contains all custom made classes to help in the project 
+- [**HelperClasses**](HelperClasses/) which contains all custom made classes to help in the project 
 
-The logic for the calculation of the inputted function is present in `FunctionObj` class in [functionobj.cpp](HelperClasses/functionobj.cpp) 
+- The logic for the calculation of the inputted function is present in `FunctionObj` class in [functionobj.cpp](HelperClasses/functionobj.cpp) 
 
-The logic for Plotting the graph is present in `Plot` class in [plot.cpp](HelperClasses/plot.cpp)
+- The logic for Plotting the graph is present in `Plot` class in [plot.cpp](HelperClasses/plot.cpp)
 
-While `QCustomPlot` is a Qt C++ widget for plotting and data visualization in [qcustomplot.cpp](HelperClasses/qcustomplot.cpp) for more info on it please refer to their [site](https://www.qcustomplot.com/)
+- While `QCustomPlot` is a Qt C++ widget for plotting and data visualization in [qcustomplot.cpp](HelperClasses/qcustomplot.cpp) for more info on it please refer to their [site](https://www.qcustomplot.com/)
 
 
