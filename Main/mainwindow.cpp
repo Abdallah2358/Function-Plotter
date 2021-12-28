@@ -30,7 +30,8 @@ void MainWindow::on_plotBtn_clicked()
     qDebug() << "here";
     if (func.ValidateFunc() == 0)
     {
-        func.populateVectors();
+        //func.populateVectors();
+        func.populateVectorsV2();
         plot = new Plot(func.getX(), func.getY(), this);
         plot->show();
     }

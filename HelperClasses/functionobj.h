@@ -14,6 +14,7 @@ class FunctionObj
 public:
     FunctionObj();
     FunctionObj(QString inFuncStr, QString inMin, QString inMax , QVBoxLayout * warningLayout =nullptr);
+
     //validation functions
     bool isValidMin();
     bool isValidMax();
@@ -24,7 +25,9 @@ public:
     double handlePower(double x);
     double handlePower( QString str,double x);
     double calculateResult(double x);
+    double calculateResult(QStringList list,double x);
     void populateVectors();
+    void populateVectorsV2();
     //helper functions
     void reverseQStr(QString &str);
     double operationResult(double op1, double op2, QString op);

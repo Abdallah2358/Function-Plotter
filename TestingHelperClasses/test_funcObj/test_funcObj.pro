@@ -6,7 +6,7 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES +=  tst_tst_funcobj.cpp \
+SOURCES +=  tst_funcobj.cpp \
     ../../HelperClasses/functionobj.cpp
 
 HEADERS += \

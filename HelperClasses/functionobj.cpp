@@ -136,6 +136,13 @@ double FunctionObj::handlePower(double x)
 }
 double FunctionObj::handlePower(QString str, double x = 1)
 {
+    /*
+   Microsoft Excel and computation programming language MATLAB evaluate a^b^c as (a^b)^c, 
+    but Google Search and Wolfram Alpha as a^(b^c).
+    Thus 4^3^2 is evaluated to 4,096 in the first case and to 262,144 in the second case. 
+    source :    https://en.wikipedia.org/wiki/Order_of_operations (Special cases
+    Serial exponentiation   ) 
+    */
     QStringList operands = str.split("^");
     QStringList::iterator tempit = operands.end() - 1;
     //if it is not a double then it should be x since we did our validation
@@ -171,17 +178,6 @@ double FunctionObj::operationResult(double op1, double op2, QString op)
         return op1 - op2;
     if (op == "/")
     {
-        qDebug() << "op2 in division" << (op2 == 0);
-        if (op2 == 0)
-        {
-            qDebug() << "IN IF in division 1";
-            createWarning("You Can`t divide by 0 please check your Function");
-            // createWarning("All Results on the plot Can not be trusted");
-            qDebug() << "IN IF in division 2";
-            showWarning();
-            qDebug() << "IN IF in division 3";
-            return 1;
-        }
         return op1 / op2;
     }
     if (op == "*")
@@ -228,7 +224,6 @@ double FunctionObj::calculateResult(double x)
                         *(it + 1) = QString::number(x);
 
                     qDebug() << numVector.last() << *it << (*(it + 1)).toDouble() << "  ,2";
-
                     numVector.append(operationResult(numVector.takeLast(), (*(it + 1)).toDouble(), *it));
                 }
                 else
@@ -272,19 +267,115 @@ double FunctionObj::calculateResult(double x)
     return numVector.last();
 }
 
+double FunctionObj::calculateResult(QStringList list, double x)
+{
+ qDebug() << "start of calclate of x = " << x;
+    QStringList::iterator it = list.begin();
+    QVector<double> numVector;
+    QVector<QString> operatorVector;
+    bool skipFlag = false;
+
+    bool isTempDouble = false;
+    double dtemp;
+    while (it != splitFunctionList.end())
+    {
+
+        QString tempStr = *it;
+        dtemp = tempStr.toDouble(&isTempDouble);
+        if (!skipFlag) {
+            if (isTempDouble)
+            {
+                //is it a number
+                numVector.append(dtemp);
+                continue;
+            }
+            else if (tempStr == "x")
+            {
+                //is it an "x"
+                numVector.append(x);
+                continue;
+            }
+            else if (tempStr.contains("^"))
+            {
+                // is it a power
+                numVector.append(handlePower(tempStr, x));
+            }
+            else if (tempStr == "+" || tempStr == "-")
+            {
+                //is it a plus or a muins
+                //then put it in oprators stack
+                numVector.append(handlePower(tempStr, x));
+            }
+            else
+            {
+                // then only left option is multiplication or divition
+
+                skipFlag = true; //skip converting next number
+                //since multiplication or dividtion should be done from left to right
+                QString nextStr = *(it + 1); //store next number or x
+                dtemp = nextStr.toDouble(&isTempDouble);
+                if (!isTempDouble) // if it is not a number then it must be x or a term with power
+                {
+                    if (nextStr == "x") // if it is x
+                        dtemp = x;
+                    else //then it must be a term with power
+                        dtemp = handlePower(nextStr, x);
+                }
+                double op1 = numVector.takeLast();
+                double op2 = dtemp;
+                qDebug() << op1 << *it << op2 << "  ,2";
+                if (op2 == 0)
+                {
+                    createWarning("your function contains division by 0 which is not allowed");
+                    showWarning();
+                    numVector.append(0);
+                }
+                else
+                {
+                    numVector.append(operationResult(op1, op2, *it));
+                }
+            }
+        }//now after replacing "x" , handling power , multiplication and division
+
+     }
+
+
+    // we handle addition and subtraction
+    while (!operatorVector.empty())
+    {
+        //qDebug() <<"in while appending";
+        double op2 = numVector.takeLast();
+        double op1 = numVector.takeLast();
+        qDebug() << op1 << operatorVector.last() << op2 << " = " << operationResult(op1, op2, operatorVector.last()) << "  ,4";
+        numVector.append(operationResult(op1, op2, operatorVector.takeLast()));
+    }
+    //now we have our result at the top of the stack
+    qDebug() << "result = " << numVector.last();
+    return numVector.last();
+}
+
 void FunctionObj::populateVectors()
 {
     QString temp = funcStr;
     for (double j = min; j <= max; j += ((max - min) / 100))
     {
         splitWithDelimiter();
-        handlePower(j);
         x.append(j);
         y.append(calculateResult(j));
         funcStr = temp;
     }
-
     qDebug() << "populate vector done";
+}
+
+
+void FunctionObj::populateVectorsV2()
+{
+    for (double j = min; j <= max; j += ((max - min) / 100))
+    {
+        x.append(j);
+        y.append(calculateResult(splitWithDelimiter(funcStr),j));
+    }
+    qDebug() << "populate vector v2 done";
 }
 
 //getters
