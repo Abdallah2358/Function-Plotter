@@ -21,10 +21,11 @@ public:
     int ValidateFunc();
     QStringList splitWithDelimiter();
     QStringList splitWithDelimiter( QString funcStr );
+    double handlePower(double x);
+    double handlePower( QString str,double x);
     double calculateResult(double x);
     void populateVectors();
     //helper functions
-    double handlePower(double x);
     void reverseQStr(QString &str);
     double operationResult(double op1, double op2, QString op);
     QString createWarning(QString str);
@@ -41,7 +42,7 @@ public:
     void setMax(double max);
     void setSMin(QString min);
     void setSMax(QString max);
-    void setFuncStr(QString str);
+    int setFuncStr(QString str);
 private:
     void  clearLayout(QLayout *layout);
     QVBoxLayout * warningLayout = nullptr;

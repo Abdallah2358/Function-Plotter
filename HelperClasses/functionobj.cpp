@@ -18,7 +18,6 @@ FunctionObj::FunctionObj(QString inFuncStr, QString inMin, QString inMax, QVBoxL
     this->warningBox->setLayout(this->vbox);
 }
 
-
 //validation
 int FunctionObj::ValidateFunc()
 {
@@ -73,10 +72,6 @@ bool FunctionObj::isValidMin()
 {
     bool ok;
     this->min = smin.toDouble(&ok);
-    if (!ok)
-    {
-        //qDebug("please enter valid minmum");
-    }
     return ok;
 }
 bool FunctionObj::isValidMax()
@@ -84,7 +79,7 @@ bool FunctionObj::isValidMax()
     bool ok;
     this->max = smax.toDouble(&ok);
     if (!ok)
-      {
+    {
         // qDebug("please enter valid maximum");
     }
     return ok;
@@ -108,7 +103,6 @@ double FunctionObj::handlePower(double x)
         if ((*it).contains("^"))
         {
             QStringList operands = (*it).split("^");
-
             QStringList::iterator tempit = operands.end() - 1;
             //if it is not a double then it should be x since we did our validation
             bool isResDouble = true;
@@ -140,7 +134,35 @@ double FunctionObj::handlePower(double x)
     qDebug() << "handle power done";
     return 0;
 }
-
+double FunctionObj::handlePower(QString str, double x = 1)
+{
+    QStringList operands = str.split("^");
+    QStringList::iterator tempit = operands.end() - 1;
+    //if it is not a double then it should be x since we did our validation
+    bool isResDouble = true;
+    double res = (*tempit).toDouble(&isResDouble);
+    if (!isResDouble)
+        res = x;
+    tempit--;
+    //go to next item
+    while (tempit != operands.begin() - 1)
+    {
+        //iterate over the numbers from right to left stacking each result to the right
+        //ex : 2^3^4 is done in two steps
+        //3^4 =81
+        //2^81
+        //then replace the string "2^3^4" in the list by the result
+        //qDebug() <<"it = "<< *it <<" ,res= "<<res;
+        bool isTempDouble = true;
+        double temp = (*tempit).toDouble(&isTempDouble);
+        if (!isTempDouble)
+            temp = x;
+        // qDebug() << "temp = " << temp << " ,res= " << res;
+        res = pow(temp, res);
+        tempit--;
+    }
+    return res;
+}
 double FunctionObj::operationResult(double op1, double op2, QString op)
 {
     if (op == "+")
@@ -149,15 +171,15 @@ double FunctionObj::operationResult(double op1, double op2, QString op)
         return op1 - op2;
     if (op == "/")
     {
-        qDebug()<<"op2 in division" << (op2==0);
+        qDebug() << "op2 in division" << (op2 == 0);
         if (op2 == 0)
         {
-            qDebug()<<"IN IF in division 1" ;
+            qDebug() << "IN IF in division 1";
             createWarning("You Can`t divide by 0 please check your Function");
-           // createWarning("All Results on the plot Can not be trusted");
-             qDebug()<<"IN IF in division 2" ;
+            // createWarning("All Results on the plot Can not be trusted");
+            qDebug() << "IN IF in division 2";
             showWarning();
-             qDebug()<<"IN IF in division 3" ;
+            qDebug() << "IN IF in division 3";
             return 1;
         }
         return op1 / op2;
@@ -167,7 +189,7 @@ double FunctionObj::operationResult(double op1, double op2, QString op)
     return 0;
 }
 
-double FunctionObj::calculateResult(double x  )
+double FunctionObj::calculateResult(double x)
 {
 
     QStringList::iterator it = splitFunctionList.begin();
@@ -250,16 +272,15 @@ double FunctionObj::calculateResult(double x  )
     return numVector.last();
 }
 
-
 void FunctionObj::populateVectors()
 {
-    QString temp =funcStr;
+    QString temp = funcStr;
     for (double j = min; j <= max; j += ((max - min) / 100))
     {
         splitWithDelimiter();
         handlePower(j);
         x.append(j);
-        y.append(calculateResult(j ));
+        y.append(calculateResult(j));
         funcStr = temp;
     }
 
@@ -292,12 +313,14 @@ void FunctionObj::setSMax(QString max)
 {
     this->smax = max;
 }
-void FunctionObj::setFuncStr(QString str){
-    this->funcStr =str;
+int FunctionObj::setFuncStr(QString str)
+{
+    this->funcStr = str;
+    return ValidateFunc();
 }
 // helper functions
 
-QStringList FunctionObj::splitWithDelimiter( )
+QStringList FunctionObj::splitWithDelimiter()
 {
     //QString funcStr = "" , QRegExp rsx =QRegExp("")
     QRegExp rx("([+\\-\\*\\/])");
@@ -317,11 +340,10 @@ QStringList FunctionObj::splitWithDelimiter( )
         }
     }
     splitFunctionList = queryWithSeparators;
-    return queryWithSeparators  ;
+    return queryWithSeparators;
 }
 
-
-QStringList FunctionObj::splitWithDelimiter( QString funcStr  )
+QStringList FunctionObj::splitWithDelimiter(QString funcStr)
 {
     //QString funcStr = "" , QRegExp rsx =QRegExp("")
     QRegExp rx("([+\\-\\*\\/])");
@@ -341,7 +363,7 @@ QStringList FunctionObj::splitWithDelimiter( QString funcStr  )
         }
     }
     //splitFunctionList = queryWithSeparators;
-    return queryWithSeparators  ;
+    return queryWithSeparators;
 }
 
 //separting this functions allows me to add multiple warning in the same box
@@ -360,16 +382,16 @@ void FunctionObj::showWarning()
 {
     if (warningLayout != nullptr)
     {
-    clearWarning();
-    warningLayout->addWidget(warningBox);
+        clearWarning();
+        warningLayout->addWidget(warningBox);
     }
 }
 void FunctionObj::clearWarning()
 {
-    if (warningLayout != nullptr) {
-         clearLayout(warningLayout);
+    if (warningLayout != nullptr)
+    {
+        clearLayout(warningLayout);
     }
-
 }
 void FunctionObj::clearLayout(QLayout *layout)
 {
