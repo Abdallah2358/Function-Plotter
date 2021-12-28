@@ -38,7 +38,7 @@ int FunctionObj::ValidateFunc()
         showWarning();
         return 2;
     }
-    QRegExp checkInputExp("[\\dx+\\-\\*/^]*");
+    QRegExp checkInputExp("[\\dx+\\-\\*/^.]*");
     if (!checkInputExp.exactMatch(funcStr))
     {
         //qDebug() << "The Function can only contain numbers, \"x\"and this operators + - / * ^";
@@ -84,7 +84,6 @@ bool FunctionObj::isValidMax()
     }
     return ok;
 }
-
 bool FunctionObj::isValidRange()
 {
     if (getMax() > getMin())
@@ -177,14 +176,11 @@ double FunctionObj::operationResult(double op1, double op2, QString op)
     if (op == "-")
         return op1 - op2;
     if (op == "/")
-    {
         return op1 / op2;
-    }
     if (op == "*")
         return op1 * op2;
     return 0;
 }
-
 double FunctionObj::calculateResult(double x)
 {
 
@@ -196,7 +192,6 @@ double FunctionObj::calculateResult(double x)
     while (it != splitFunctionList.end())
     {
         bool isNegative = false;
-
         //qDebug() << "checking x";
         if ((*it) == "x")
             *it = QString::number(x);
@@ -269,77 +264,74 @@ double FunctionObj::calculateResult(double x)
 
 double FunctionObj::calculateResult(QStringList list, double x)
 {
- qDebug() << "start of calclate of x = " << x;
+    qDebug() << "start of calclate of x = " << x;
     QStringList::iterator it = list.begin();
     QVector<double> numVector;
     QVector<QString> operatorVector;
     bool skipFlag = false;
-
     bool isTempDouble = false;
     double dtemp;
-    while (it != splitFunctionList.end())
+    while (it != list.end())
     {
-
         QString tempStr = *it;
         dtemp = tempStr.toDouble(&isTempDouble);
-        if (!skipFlag) {
-            if (isTempDouble)
+        if (skipFlag)
+        {
+            it++;
+            continue;
+        }
+        if (isTempDouble)
+        {
+            //is it a number
+            numVector.append(dtemp);
+        }
+        else if (tempStr == "x")
+        {
+            //is it an "x"
+            numVector.append(x);
+
+        }
+        else if (tempStr.contains("^"))
+        {
+            // is it a power
+            numVector.append(handlePower(tempStr, x));
+        }
+        else if (tempStr == "+" || tempStr == "-")
+        {
+            //is it addition or subtraction
+            //then put it in operators stack
+            operatorVector.append(tempStr);
+        }
+        else
+        {
+            // then only left option is multiplication or division
+            skipFlag = true; //skip converting next number
+            //since multiplication or division should be done from left to right
+            QString nextStr = (*(it + 1)); //store next number or x
+            dtemp = nextStr.toDouble(&isTempDouble);
+            if (!isTempDouble) // if it is not a number then it must be x or a term with power
             {
-                //is it a number
-                numVector.append(dtemp);
-                continue;
+                if (nextStr == "x") // if it is x
+                    dtemp = x;
+                else //then it must be a term with power
+                    dtemp = handlePower(nextStr, x);
             }
-            else if (tempStr == "x")
+            double op1 = numVector.takeLast();
+            double op2 = dtemp;
+            qDebug() << op1 << *it << op2 << "  ,2";
+            if (op2 == 0)
             {
-                //is it an "x"
-                numVector.append(x);
-                continue;
-            }
-            else if (tempStr.contains("^"))
-            {
-                // is it a power
-                numVector.append(handlePower(tempStr, x));
-            }
-            else if (tempStr == "+" || tempStr == "-")
-            {
-                //is it a plus or a muins
-                //then put it in oprators stack
-                numVector.append(handlePower(tempStr, x));
+                createWarning("your function contains division by 0 which is not allowed");
+                showWarning();
+                numVector.append(std::numeric_limits<double>::max());
             }
             else
             {
-                // then only left option is multiplication or divition
-
-                skipFlag = true; //skip converting next number
-                //since multiplication or dividtion should be done from left to right
-                QString nextStr = *(it + 1); //store next number or x
-                dtemp = nextStr.toDouble(&isTempDouble);
-                if (!isTempDouble) // if it is not a number then it must be x or a term with power
-                {
-                    if (nextStr == "x") // if it is x
-                        dtemp = x;
-                    else //then it must be a term with power
-                        dtemp = handlePower(nextStr, x);
-                }
-                double op1 = numVector.takeLast();
-                double op2 = dtemp;
-                qDebug() << op1 << *it << op2 << "  ,2";
-                if (op2 == 0)
-                {
-                    createWarning("your function contains division by 0 which is not allowed");
-                    showWarning();
-                    numVector.append(0);
-                }
-                else
-                {
-                    numVector.append(operationResult(op1, op2, *it));
-                }
+                numVector.append(operationResult(op1, op2, *it));
             }
-        }//now after replacing "x" , handling power , multiplication and division
-
-     }
-
-
+        } //now after replacing "x" , handling power , multiplication and division
+        it++;
+    }
     // we handle addition and subtraction
     while (!operatorVector.empty())
     {
@@ -367,13 +359,12 @@ void FunctionObj::populateVectors()
     qDebug() << "populate vector done";
 }
 
-
 void FunctionObj::populateVectorsV2()
 {
     for (double j = min; j <= max; j += ((max - min) / 100))
     {
         x.append(j);
-        y.append(calculateResult(splitWithDelimiter(funcStr),j));
+        y.append(calculateResult(splitWithDelimiter(funcStr), j));
     }
     qDebug() << "populate vector v2 done";
 }
