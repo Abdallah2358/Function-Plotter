@@ -14,7 +14,7 @@ Built with QT in C++.
 
 ## **Getting started**
 - ### Demo application
- > Please download the compressed fille [Function Plotter.zip](Function%20Plotter.zip)
+ > Please download the compressed fille [Function Plotter.zip](Function%20Plotter.zip) and execute/run `Function Plotter.exe`
 <br>
 
 - ### Requirements and pre-requisites for development
