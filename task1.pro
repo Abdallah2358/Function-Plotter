@@ -23,8 +23,8 @@ HEADERS += \
     HelperClasses\qcustomplot.h
 
 FORMS += \
-    ui/mainwindow.ui \
-    ui/plot.ui
+    UI/mainwindow.ui \
+    UI/plot.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
