@@ -4,8 +4,8 @@ This is Desktop Application with a simple UI to plot simple functions with suppo
 Built with QT in C++.
 
 ## Overview of the application
-<![1](images/1.png)>
-<![1](images/2.png)>
+![1](images/1.png)
+![1](images/2.png)
 
 ## Getting started
 ### Requirements and pre-requisites
