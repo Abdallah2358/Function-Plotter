@@ -13,7 +13,11 @@ Built with QT in C++.
 <br>
 
 ## **Getting started**
-- ### Requirements and pre-requisites
+- ### Demo application
+ > Please download the compressed fille [Function Plotter.zip](Function%20Plotter.zip)
+<br>
+
+- ### Requirements and pre-requisites for development
 >To effectively initialize this project, Developers needs to have [Qt 5.12](https://www.qt.io/offline-installers) with the suitable Mingw build kit on their machines and [Qt Creator](https://www.qt.io/offline-installers) to build the project.
 
 <br>
