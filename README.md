@@ -1,20 +1,21 @@
+
 # [**Function Plotter**](https://github.com/Abdallah2358/Function-Plotter)
-## Description:
+## **Description**:
 This is Desktop Application with a simple UI to plot simple functions with support of these operators [ + - * / ^]
 Built with QT in C++.
 
-## Overview of the application
+## **Overview of the application**
 ![1](images/1.png)
 ![1](images/2.png)
 
-## Getting started
+## **Getting started**
 ### Requirements and pre-requisites
 To effectively initialize this project, Developers needs to have [Qt 5.12](https://www.qt.io/offline-installers) with the suitable Mingw build kit on their machines and [Qt Creator](https://www.qt.io/offline-installers) to build the project.
 
 To open the project in ``Qt Creator`` simply open the [task1.pro](task1.pro).
 
 
-### Tests
+### **Tests**
 The tests are written using the [**Qt Test**](https://doc.qt.io/qt-5/qttest-index.html) to test helper function of the project. 
 
 The tests are run by using Qt Creator by opening the tst_className.pro from testing project in the [TestingHelperClasses](TestingHelperClasses/) folder.
@@ -25,7 +26,7 @@ There are provided 23 tests provided in the [tst_funcobj.cpp](TestingHelperClass
 
 It is a working progress.
 
-### Project Structure
+### **Project Structure**
       │   .gitignore
       │   README.md
       │   task1.pro
@@ -55,5 +56,14 @@ It is a working progress.
             mainwindow.ui
             plot.ui
 
-This structure has 2 main folders:
+**This structure has 4 main folders/directories :**
+
+[**HelperClasses**](HelperClasses/) which contains all custom made classes to help in the project 
+
+The logic for the calculation of the inputted function is present in `FunctionObj` class in [functionobj.cpp](HelperClasses/functionobj.cpp) 
+
+The logic for Plotting the graph is present in `Plot` class in [plot.cpp](HelperClasses/plot.cpp)
+
+While `QCustomPlot` is a Qt C++ widget for plotting and data visualization in [qcustomplot.cpp](HelperClasses/qcustomplot.cpp) for more info on it please refer to their [site](https://www.qcustomplot.com/)
+
 
