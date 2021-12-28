@@ -1,4 +1,5 @@
 #prevent saving builds
 /build*
+/*/build*
 .vscode
-*.pro.*
+*.pro.*g

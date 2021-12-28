@@ -18,55 +18,88 @@ FunctionObj::FunctionObj(QString inFuncStr, QString inMin, QString inMax, QVBoxL
     this->warningBox->setLayout(this->vbox);
 }
 
+
+//validation
 int FunctionObj::ValidateFunc()
 {
     //remove spaces
     funcStr = funcStr.trimmed();
     if (funcStr.isEmpty())
     {
-        qDebug() << "The Function can not be empty";
-        crreateWarninig("The Function can not be empty");
+        //qDebug() << "The Function can not be empty";
+        createWarning("The Function can not be empty");
         showWarning();
         return 1; // 1 indicated empty string
         //give message "Empty Input"
     }
     if (funcStr.contains(" "))
     {
-        qDebug() << "The Function can not contain spaces";
-        crreateWarninig("The Function can not contain spaces");
+        //qDebug() << "The Function can not contain spaces";
+        createWarning("The Function can not contain spaces");
         showWarning();
         return 2;
     }
     QRegExp checkInputExp("[\\dx+\\-\\*/^]*");
     if (!checkInputExp.exactMatch(funcStr))
     {
-        qDebug() << "The Function can only contain numbers, \"x\"and this operators + - / * ^";
-        crreateWarninig("The Function can only contain numbers, \"x\"and this operators + - / * ^");
+        //qDebug() << "The Function can only contain numbers, \"x\"and this operators + - / * ^";
+        createWarning("The Function can only contain numbers, \"x\"and this operators + - / * ^");
         showWarning();
         return 3;
     }
     if (!isValidMin())
     {
-        crreateWarninig("please provide a valid decimal number in Min");
+        createWarning("please provide a valid decimal number in Min");
         showWarning();
         return 4;
     }
     if (!isValidMax())
     {
-        crreateWarninig("please provide a valid decimal number in Max");
-         showWarning();
+        createWarning("please provide a valid decimal number in Max");
+        showWarning();
         return 5;
     }
     if (!isValidRange())
     {
-        crreateWarninig("please provide a valid range Max > Min");
+        createWarning("please provide a valid range Max > Min");
         showWarning();
         return 6;
     }
     clearWarning();
-    qDebug() << "validation done fun str : " << funcStr;
+    //qDebug() << "validation done fun str : " << funcStr;
     return 0;
 }
+bool FunctionObj::isValidMin()
+{
+    bool ok;
+    this->min = smin.toDouble(&ok);
+    if (!ok)
+    {
+        //qDebug("please enter valid minmum");
+    }
+    return ok;
+}
+bool FunctionObj::isValidMax()
+{
+    bool ok;
+    this->max = smax.toDouble(&ok);
+    if (!ok)
+      {
+        // qDebug("please enter valid maximum");
+    }
+    return ok;
+}
+
+bool FunctionObj::isValidRange()
+{
+    if (getMax() > getMin())
+        return true;
+    //qDebug("please enter valid range, the min can only be less than max");
+    return false;
+}
+
+//calculation
+
 double FunctionObj::handlePower(double x)
 {
     QStringList::iterator it = splitFunctionList.begin();
@@ -75,6 +108,7 @@ double FunctionObj::handlePower(double x)
         if ((*it).contains("^"))
         {
             QStringList operands = (*it).split("^");
+
             QStringList::iterator tempit = operands.end() - 1;
             //if it is not a double then it should be x since we did our validation
             bool isResDouble = true;
@@ -85,6 +119,11 @@ double FunctionObj::handlePower(double x)
             //go to next item
             while (tempit != operands.begin() - 1)
             {
+                //iterate over the numbers from right to left stacking each result to the right
+                //ex : 2^3^4 is done in two steps
+                //3^4 =81
+                //2^81
+                //then replace the string "2^3^4" in the list by the result
                 //qDebug() <<"it = "<< *it <<" ,res= "<<res;
                 bool isTempDouble = true;
                 double temp = (*tempit).toDouble(&isTempDouble);
@@ -101,35 +140,37 @@ double FunctionObj::handlePower(double x)
     qDebug() << "handle power done";
     return 0;
 }
-bool FunctionObj::isValidMin()
+
+double FunctionObj::operationResult(double op1, double op2, QString op)
 {
-    bool ok;
-    min = smin.toDouble(&ok);
-    if (!ok)
-        qDebug("please enter valid minmum");
-    return ok;
-}
-bool FunctionObj::isValidMax()
-{
-    bool ok;
-    max = smax.toDouble(&ok);
-    if (!ok)
-        qDebug("please enter valid maximum");
-    return ok;
-}
-bool FunctionObj::isValidRange()
-{
-    if (getMax() > getMin())
-        return true;
-    qDebug("please enter valid range, the min can only be less than max");
-    return false;
+    if (op == "+")
+        return op1 + op2;
+    if (op == "-")
+        return op1 - op2;
+    if (op == "/")
+    {
+        qDebug()<<"op2 in division" << (op2==0);
+        if (op2 == 0)
+        {
+            qDebug()<<"IN IF in division 1" ;
+            createWarning("You Can`t divide by 0 please check your Function");
+           // createWarning("All Results on the plot Can not be trusted");
+             qDebug()<<"IN IF in division 2" ;
+            showWarning();
+             qDebug()<<"IN IF in division 3" ;
+            return 1;
+        }
+        return op1 / op2;
+    }
+    if (op == "*")
+        return op1 * op2;
+    return 0;
 }
 
-double FunctionObj::calculateResult(double x)
+double FunctionObj::calculateResult(double x  )
 {
 
     QStringList::iterator it = splitFunctionList.begin();
-
     QVector<double> numVector;
     QVector<QString> operatorVector;
     bool skipFlag = false;
@@ -165,6 +206,7 @@ double FunctionObj::calculateResult(double x)
                         *(it + 1) = QString::number(x);
 
                     qDebug() << numVector.last() << *it << (*(it + 1)).toDouble() << "  ,2";
+
                     numVector.append(operationResult(numVector.takeLast(), (*(it + 1)).toDouble(), *it));
                 }
                 else
@@ -208,17 +250,17 @@ double FunctionObj::calculateResult(double x)
     return numVector.last();
 }
 
+
 void FunctionObj::populateVectors()
 {
-
-    QString temp = QString(funcStr);
+    QString temp =funcStr;
     for (double j = min; j <= max; j += ((max - min) / 100))
     {
-        splitFunction();
+        splitWithDelimiter();
         handlePower(j);
         x.append(j);
-        y.append(calculateResult(j));
-        funcStr = QString(temp);
+        y.append(calculateResult(j ));
+        funcStr = temp;
     }
 
     qDebug() << "populate vector done";
@@ -242,21 +284,23 @@ void FunctionObj::setMax(double max)
 {
     this->max = max;
 }
-
-// helper functions
-void FunctionObj::reverseQStr(QString &str)
+void FunctionObj::setSMin(QString min)
 {
-    int n = str.length();
-    for (int i = 0; i < n / 2; i++)
-    {
-        QChar temp = str[i];
-        str[i] = str[n - i - 1];
-        str[n - i - 1] = temp;
-    }
+    this->smin = min;
 }
-void FunctionObj::splitFunction()
+void FunctionObj::setSMax(QString max)
 {
-    QRegExp rx("[+\\-\\*\\/]");
+    this->smax = max;
+}
+void FunctionObj::setFuncStr(QString str){
+    this->funcStr =str;
+}
+// helper functions
+
+QStringList FunctionObj::splitWithDelimiter( )
+{
+    //QString funcStr = "" , QRegExp rsx =QRegExp("")
+    QRegExp rx("([+\\-\\*\\/])");
     QStringList query = funcStr.split(rx);
     QStringList queryWithSeparators;
     int strLen = funcStr.length();
@@ -273,21 +317,35 @@ void FunctionObj::splitFunction()
         }
     }
     splitFunctionList = queryWithSeparators;
+    return queryWithSeparators  ;
 }
-double FunctionObj::operationResult(double op1, double op2, QString op)
+
+
+QStringList FunctionObj::splitWithDelimiter( QString funcStr  )
 {
-    if (op == "+")
-        return op1 + op2;
-    if (op == "-")
-        return op1 - op2;
-    if (op == "/")
-        return op1 / op2;
-    if (op == "*")
-        return op1 * op2;
-    return 0;
+    //QString funcStr = "" , QRegExp rsx =QRegExp("")
+    QRegExp rx("([+\\-\\*\\/])");
+    QStringList query = funcStr.split(rx);
+    QStringList queryWithSeparators;
+    int strLen = funcStr.length();
+    int pos = 0;
+    for (const QString part : query)
+    {
+        queryWithSeparators.append(part);
+        pos += part.length();
+        if (pos + 1 < strLen)
+        {
+            // we know that the separators are all 1 character long
+            queryWithSeparators.append(QString(funcStr[pos]));
+            pos += 1;
+        }
+    }
+    //splitFunctionList = queryWithSeparators;
+    return queryWithSeparators  ;
 }
+
 //separting this functions allows me to add multiple warning in the same box
-QString FunctionObj::crreateWarninig(QString str)
+QString FunctionObj::createWarning(QString str)
 {
     if (warningLayout != nullptr)
     {
@@ -295,26 +353,46 @@ QString FunctionObj::crreateWarninig(QString str)
         qDebug() << str;
         return str;
     }
-    qDebug() << "please provide layout";
+    //qDebug() << "please provide layout";
     return "please provide layout";
 }
 void FunctionObj::showWarning()
 {
+    if (warningLayout != nullptr)
+    {
     clearWarning();
     warningLayout->addWidget(warningBox);
+    }
 }
-void FunctionObj::clearWarning(){
-     clearLayout(warningLayout);
+void FunctionObj::clearWarning()
+{
+    if (warningLayout != nullptr) {
+         clearLayout(warningLayout);
+    }
+
 }
 void FunctionObj::clearLayout(QLayout *layout)
 {
-    QLayoutItem * item;
-    QLayout * sublayout;
-    QWidget * widget;
-    while ((item = layout->takeAt(0))) {
-        if ((sublayout = item->layout()) != 0) {clearLayout(sublayout);}
-        else if ((widget = item->widget()) != 0) {widget->hide(); delete widget;}
-        else {delete item;
-            return;}
+    QLayoutItem *item;
+    QLayout *sublayout;
+    QWidget *widget;
+
+    while ((item = layout->takeAt(0)))
+    {
+        if ((sublayout = item->layout()) != 0)
+        {
+            clearLayout(sublayout);
+        }
+        else if ((widget = item->widget()) != 0)
+        {
+            widget->hide();
+            delete widget;
+        }
+        else
+        {
+            delete item;
+            return;
+        }
     }
+    return;
 }

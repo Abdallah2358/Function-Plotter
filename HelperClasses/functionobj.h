@@ -19,14 +19,15 @@ public:
     bool isValidMax();
     bool isValidRange();
     int ValidateFunc();
-    void splitFunction();
+    QStringList splitWithDelimiter();
+    QStringList splitWithDelimiter( QString funcStr );
     double calculateResult(double x);
     void populateVectors();
     //helper functions
     double handlePower(double x);
     void reverseQStr(QString &str);
-    double operationResult(double op1, double op2, QString oprator);
-    QString crreateWarninig(QString str);
+    double operationResult(double op1, double op2, QString op);
+    QString createWarning(QString str);
     void showWarning();
     void clearWarning();
 
@@ -38,9 +39,12 @@ public:
     //setters
     void setMin(double min);
     void setMax(double max);
+    void setSMin(QString min);
+    void setSMax(QString max);
+    void setFuncStr(QString str);
 private:
     void  clearLayout(QLayout *layout);
-    QVBoxLayout * warningLayout;
+    QVBoxLayout * warningLayout = nullptr;
     QGroupBox *warningBox = new QGroupBox ("Warning") ;
     QVBoxLayout *vbox = new QVBoxLayout();
     QString funcStr;

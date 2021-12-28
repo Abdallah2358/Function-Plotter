@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include<QtDebug>
-#include<QDebug>
+#include <QtDebug>
+#include <QDebug>
 
 #include <QApplication>
 
