@@ -52,8 +52,7 @@ Built with QT in C++.
 ## **Project Structure**
       │   .gitignore
       │   README.md
-      │   task1.pro
-      │   task1.pro.user
+      │   function_plotter.pro
       │
       ├───HelperClasses
       │       functionobj.cpp
