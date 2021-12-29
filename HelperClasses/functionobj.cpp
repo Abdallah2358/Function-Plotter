@@ -46,6 +46,12 @@ int FunctionObj::ValidateFunc()
         showWarning();
         return 3;
     }
+    
+    if(funcStr.contains("/0")){
+        createWarning("You can not divide by 0");
+        showWarning();
+        return 7;
+    }
     if (!isValidMin())
     {
         createWarning("please provide a valid decimal number in Min");
@@ -64,6 +70,7 @@ int FunctionObj::ValidateFunc()
         showWarning();
         return 6;
     }
+
     clearWarning();
     //qDebug() << "validation done fun str : " << funcStr;
     return 0;
@@ -289,7 +296,6 @@ double FunctionObj::calculateResult(QStringList list, double x)
         {
             //is it an "x"
             numVector.append(x);
-
         }
         else if (tempStr.contains("^"))
         {
@@ -319,19 +325,11 @@ double FunctionObj::calculateResult(QStringList list, double x)
             double op1 = numVector.takeLast();
             double op2 = dtemp;
             qDebug() << op1 << *it << op2 << "  ,2";
-            if (op2 == 0)
-            {
-                createWarning("your function contains division by 0 which is not allowed");
-                showWarning();
-                numVector.append(std::numeric_limits<double>::max());
-            }
-            else
-            {
+
                 numVector.append(operationResult(op1, op2, *it));
-            }
-        } //now after replacing "x" , handling power , multiplication and division
+        }
         it++;
-    }
+    }//now after replacing "x" , handling power , multiplication and division
     // we handle addition and subtraction
     while (!operatorVector.empty())
     {
@@ -464,8 +462,12 @@ void FunctionObj::showWarning()
 {
     if (warningLayout != nullptr)
     {
+        qDebug() << "is there a problem here ?";
         clearWarning();
+        qDebug() << "not in in clearing";
+
         warningLayout->addWidget(warningBox);
+        qDebug() << "no problems";
     }
 }
 void FunctionObj::clearWarning()

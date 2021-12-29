@@ -49,7 +49,7 @@ public:
 private:
     void  clearLayout(QLayout *layout);
     QVBoxLayout * warningLayout = nullptr;
-    QGroupBox *warningBox = new QGroupBox ("Warning") ;
+    QGroupBox * warningBox = new QGroupBox ("Warning") ;
     QVBoxLayout *vbox = new QVBoxLayout();
     QString funcStr;
     QStringList splitFunctionList;

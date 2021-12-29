@@ -31,21 +31,23 @@ tst_FuncObjc::~tst_FuncObjc()
 
 void tst_FuncObjc::validateFunStr_data()
 {
-
     QTest::addColumn<QString>("string");
     QTest::addColumn<int>("result");
     QTest::newRow("Empty Func") << "" << 1;
     QTest::newRow("Test spaces") << "x+ x" << 2;
     QTest::newRow("Non allowed characters") << "x+k" << 3;
     QTest::newRow("Non valid Range") << "x+x" << 4;
+    QTest::newRow("divide number by 0") << "1/0" << 7;
+    QTest::newRow("divide floating point by 0") << "1.1/0" << 7;
+     QTest::newRow("divide powered numer") << "1.1^2/0" << 7;
+    QTest::newRow("divide x by 0") << "x/0" << 7;
+     QTest::newRow("divide x^somthing by 0") << "x^2/0" << 7;
 }
 void tst_FuncObjc::validateFunStr()
 {
-
     QFETCH(QString, string);
     QFETCH(int, result);
     QCOMPARE(f.setFuncStr(string), result);
-
 }
 void tst_FuncObjc::validateRange()
 {
