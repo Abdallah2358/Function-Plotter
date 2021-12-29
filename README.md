@@ -31,7 +31,7 @@ Built with QT in C++.
 <br>
 
 - ### Start developing 
->To open the project in ``Qt Creator`` simply open the [task1.pro](task1.pro).
+>To open the project in ``Qt Creator`` simply open the [function_plotter.pro](function_plotter.pro).
 
 <br>
 
