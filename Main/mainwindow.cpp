@@ -14,24 +14,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_plotBtn_clicked()
 {
-    //re
-
-    //QGroupBox *groupBox = new QGroupBox(tr("Warning"));
-    //QVBoxLayout *vbox = new QVBoxLayout();
-    //groupBox->setStyleSheet(QString("QGroupBox{border:2px solid gray; color : red ;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}"));
-    //vbox->addWidget(new QLabel(tr("danger")) );
-    // groupBox->setLayout(vbox);
-    //ui->warnLayout->addWidget(groupBox);
-    qDebug() << "func = " << ui->func->text();
-    qDebug() << "min = " << ui->min->text();
-    qDebug() << "max = " << ui->max->text();
     FunctionObj func(ui->func->text(), ui->min->text(), ui->max->text(), ui->warnLayout);
-    //  func.warnUser("stop at once");
-    qDebug() << "here";
     if (func.ValidateFunc() == 0)
     {
-        //func.populateVectors();
-        func.populateVectorsV2();
+        func.populateVectors();
         plot = new Plot(func.getX(), func.getY(), this);
         plot->show();
     }

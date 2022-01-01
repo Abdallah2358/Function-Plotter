@@ -6,11 +6,12 @@ FunctionObj::FunctionObj()
 
 FunctionObj::FunctionObj(QString inFuncStr, QString inMin, QString inMax, QVBoxLayout *warningLayout)
 {
-    qDebug() << inFuncStr << ", " << inMin << " ," << inMax;
     this->funcStr = inFuncStr;
     this->smax = inMax;
     this->smin = inMin;
     this->warningLayout = warningLayout;
+
+    // style waring box
     this->warningBox->setStyleSheet(
         QString(""
                 "QGroupBox{border:2px solid gray; color : red ;border-radius:5px;margin-top: 1ex;}"
@@ -25,15 +26,12 @@ int FunctionObj::ValidateFunc()
     funcStr = funcStr.trimmed();
     if (funcStr.isEmpty())
     {
-        //qDebug() << "The Function can not be empty";
         createWarning("The Function can not be empty");
         showWarning();
-        return 1; // 1 indicated empty string
-        //give message "Empty Input"
+        return 1; 
     }
     if (funcStr.contains(" "))
     {
-        //qDebug() << "The Function can not contain spaces";
         createWarning("The Function can not contain spaces");
         showWarning();
         return 2;
@@ -41,13 +39,13 @@ int FunctionObj::ValidateFunc()
     QRegExp checkInputExp("[\\dx+\\-\\*/^.]*");
     if (!checkInputExp.exactMatch(funcStr))
     {
-        //qDebug() << "The Function can only contain numbers, \"x\"and this operators + - / * ^";
         createWarning("The Function can only contain numbers, \"x\"and this operators + - / * ^");
         showWarning();
         return 3;
     }
-    
-    if(funcStr.contains("/0")){
+
+    if (funcStr.contains("/0"))
+    {
         createWarning("You can not divide by 0");
         showWarning();
         return 7;
@@ -70,9 +68,7 @@ int FunctionObj::ValidateFunc()
         showWarning();
         return 6;
     }
-
     clearWarning();
-    //qDebug() << "validation done fun str : " << funcStr;
     return 0;
 }
 bool FunctionObj::isValidMin()
@@ -101,45 +97,6 @@ bool FunctionObj::isValidRange()
 
 //calculation
 
-double FunctionObj::handlePower(double x)
-{
-    QStringList::iterator it = splitFunctionList.begin();
-    while (it != splitFunctionList.end())
-    {
-        if ((*it).contains("^"))
-        {
-            QStringList operands = (*it).split("^");
-            QStringList::iterator tempit = operands.end() - 1;
-            //if it is not a double then it should be x since we did our validation
-            bool isResDouble = true;
-            double res = (*tempit).toDouble(&isResDouble);
-            if (!isResDouble)
-                res = x;
-            tempit--;
-            //go to next item
-            while (tempit != operands.begin() - 1)
-            {
-                //iterate over the numbers from right to left stacking each result to the right
-                //ex : 2^3^4 is done in two steps
-                //3^4 =81
-                //2^81
-                //then replace the string "2^3^4" in the list by the result
-                //qDebug() <<"it = "<< *it <<" ,res= "<<res;
-                bool isTempDouble = true;
-                double temp = (*tempit).toDouble(&isTempDouble);
-                if (!isTempDouble)
-                    temp = x;
-                // qDebug() << "temp = " << temp << " ,res= " << res;
-                res = pow(temp, res);
-                tempit--;
-            }
-            (*it) = QString::number(res);
-        }
-        it++;
-    }
-    qDebug() << "handle power done";
-    return 0;
-}
 double FunctionObj::handlePower(QString str, double x = 1)
 {
     /*
@@ -188,90 +145,9 @@ double FunctionObj::operationResult(double op1, double op2, QString op)
         return op1 * op2;
     return 0;
 }
-double FunctionObj::calculateResult(double x)
-{
-
-    QStringList::iterator it = splitFunctionList.begin();
-    QVector<double> numVector;
-    QVector<QString> operatorVector;
-    bool skipFlag = false;
-    qDebug() << "start of calclate of x = " << x;
-    while (it != splitFunctionList.end())
-    {
-        bool isNegative = false;
-        //qDebug() << "checking x";
-        if ((*it) == "x")
-            *it = QString::number(x);
-        // qDebug() <<" done checking x";
-        (*it).toDouble(&isNegative);
-        if (!isNegative && (*it).contains(QRegExp("[+\\-\\*\\/]")))
-        {
-            qDebug() << isNegative;
-            if (*it == "+" || *it == "-")
-            {
-                qDebug() << "operator appended : " << *it << "  ,1";
-                operatorVector.append(*it);
-            }
-            else if ((*it).contains("e"))
-            {
-                numVector.append((*it).toDouble());
-                qDebug() << "skiped  :" << *it;
-            }
-            else
-            {
-                skipFlag = true;
-                if (operatorVector.empty())
-                {
-                    if (*(it + 1) == "x")
-                        *(it + 1) = QString::number(x);
-
-                    qDebug() << numVector.last() << *it << (*(it + 1)).toDouble() << "  ,2";
-                    numVector.append(operationResult(numVector.takeLast(), (*(it + 1)).toDouble(), *it));
-                }
-                else
-                {
-                    if (*(it + 1) == "x")
-                        *(it + 1) = QString::number(x);
-                    qDebug() << numVector.last() << *it << (*(it + 1)).toDouble() << "  ,3";
-                    numVector.append(operationResult(numVector.takeLast(), (*(it + 1)).toDouble(), *it));
-                }
-            }
-            qDebug() << "the operator" << *it;
-        }
-        else
-        {
-            if (!skipFlag)
-            {
-                //check if any number exceds the double max
-                if ((*it).toDouble() > std::numeric_limits<double>::max())
-                {
-                    qDebug() << "This program cant handle numbers more than : " << std::numeric_limits<double>::max();
-                    return 1; //mea
-                }
-                numVector.append((*it).toDouble());
-                qDebug() << "string in func" << *it << "its converstion" << numVector.last();
-                // qDebug() << "vec size" << numVector.size();
-            }
-            skipFlag = false;
-        }
-        ++it;
-    }
-    qDebug() << "done appending";
-    while (!operatorVector.empty())
-    {
-        //qDebug() <<"in while appending";
-        double op2 = numVector.takeLast();
-        double op1 = numVector.takeLast();
-        qDebug() << op1 << operatorVector.last() << op2 << " = " << operationResult(op1, op2, operatorVector.last()) << "  ,4";
-        numVector.append(operationResult(op1, op2, operatorVector.takeLast()));
-    }
-    qDebug() << "result = " << numVector.last();
-    return numVector.last();
-}
 
 double FunctionObj::calculateResult(QStringList list, double x)
 {
-    qDebug() << "start of calclate of x = " << x;
     QStringList::iterator it = list.begin();
     QVector<double> numVector;
     QVector<QString> operatorVector;
@@ -280,8 +156,10 @@ double FunctionObj::calculateResult(QStringList list, double x)
     double dtemp;
     while (it != list.end())
     {
+        //iterate over given list
         QString tempStr = *it;
         dtemp = tempStr.toDouble(&isTempDouble);
+        //do I skip?
         if (skipFlag)
         {
             it++;
@@ -291,20 +169,20 @@ double FunctionObj::calculateResult(QStringList list, double x)
         {
             //is it a number
             numVector.append(dtemp);
-        }
+        }// it is not a number
         else if (tempStr == "x")
-        {
+        {   
             //is it an "x"
             numVector.append(x);
-        }
+        }// it is not an x then it is an operator 
         else if (tempStr.contains("^"))
         {
-            // is it a power
+            // if power then handle it 
             numVector.append(handlePower(tempStr, x));
         }
         else if (tempStr == "+" || tempStr == "-")
         {
-            //is it addition or subtraction
+            //is it addition or subtraction operator
             //then put it in operators stack
             operatorVector.append(tempStr);
         }
@@ -313,7 +191,7 @@ double FunctionObj::calculateResult(QStringList list, double x)
             // then only left option is multiplication or division
             skipFlag = true; //skip converting next number
             //since multiplication or division should be done from left to right
-            QString nextStr = (*(it + 1)); //store next number or x
+            QString nextStr = (*(it + 1)); //store next number or x or power number
             dtemp = nextStr.toDouble(&isTempDouble);
             if (!isTempDouble) // if it is not a number then it must be x or a term with power
             {
@@ -324,47 +202,36 @@ double FunctionObj::calculateResult(QStringList list, double x)
             }
             double op1 = numVector.takeLast();
             double op2 = dtemp;
-            qDebug() << op1 << *it << op2 << "  ,2";
-
-                numVector.append(operationResult(op1, op2, *it));
+            numVector.append(operationResult(op1, op2, *it));
         }
         it++;
-    }//now after replacing "x" , handling power , multiplication and division
+    } //now after replacing "x" , handling power , multiplication and division
     // we handle addition and subtraction
     while (!operatorVector.empty())
     {
-        //qDebug() <<"in while appending";
         double op2 = numVector.takeLast();
         double op1 = numVector.takeLast();
-        qDebug() << op1 << operatorVector.last() << op2 << " = " << operationResult(op1, op2, operatorVector.last()) << "  ,4";
         numVector.append(operationResult(op1, op2, operatorVector.takeLast()));
     }
     //now we have our result at the top of the stack
-    qDebug() << "result = " << numVector.last();
     return numVector.last();
 }
 
+
 void FunctionObj::populateVectors()
 {
-    QString temp = funcStr;
     for (double j = min; j <= max; j += ((max - min) / 100))
     {
-        splitWithDelimiter();
+        // put point in x vector
         x.append(j);
-        y.append(calculateResult(j));
-        funcStr = temp;
+        //put result in y vector
+        y.append(
+            //calculate result from received list 
+            calculateResult(
+                //split the received text to be processed 
+                splitWithDelimiter(funcStr), j)
+                );
     }
-    qDebug() << "populate vector done";
-}
-
-void FunctionObj::populateVectorsV2()
-{
-    for (double j = min; j <= max; j += ((max - min) / 100))
-    {
-        x.append(j);
-        y.append(calculateResult(splitWithDelimiter(funcStr), j));
-    }
-    qDebug() << "populate vector v2 done";
 }
 
 //getters
@@ -400,32 +267,8 @@ int FunctionObj::setFuncStr(QString str)
 }
 // helper functions
 
-QStringList FunctionObj::splitWithDelimiter()
-{
-    //QString funcStr = "" , QRegExp rsx =QRegExp("")
-    QRegExp rx("([+\\-\\*\\/])");
-    QStringList query = funcStr.split(rx);
-    QStringList queryWithSeparators;
-    int strLen = funcStr.length();
-    int pos = 0;
-    for (const QString part : query)
-    {
-        queryWithSeparators.append(part);
-        pos += part.length();
-        if (pos + 1 < strLen)
-        {
-            // we know that the separators are all 1 character long
-            queryWithSeparators.append(QString(funcStr[pos]));
-            pos += 1;
-        }
-    }
-    splitFunctionList = queryWithSeparators;
-    return queryWithSeparators;
-}
-
 QStringList FunctionObj::splitWithDelimiter(QString funcStr)
 {
-    //QString funcStr = "" , QRegExp rsx =QRegExp("")
     QRegExp rx("([+\\-\\*\\/])");
     QStringList query = funcStr.split(rx);
     QStringList queryWithSeparators;
@@ -442,32 +285,24 @@ QStringList FunctionObj::splitWithDelimiter(QString funcStr)
             pos += 1;
         }
     }
-    //splitFunctionList = queryWithSeparators;
     return queryWithSeparators;
 }
 
-//separting this functions allows me to add multiple warning in the same box
 QString FunctionObj::createWarning(QString str)
 {
     if (warningLayout != nullptr)
     {
         vbox->addWidget(new QLabel(str));
-        qDebug() << str;
         return str;
     }
-    //qDebug() << "please provide layout";
     return "please provide layout";
 }
 void FunctionObj::showWarning()
 {
     if (warningLayout != nullptr)
     {
-        qDebug() << "is there a problem here ?";
         clearWarning();
-        qDebug() << "not in in clearing";
-
         warningLayout->addWidget(warningBox);
-        qDebug() << "no problems";
     }
 }
 void FunctionObj::clearWarning()

@@ -13,7 +13,7 @@ class Plot : public QDialog
     Q_OBJECT
 
 public:
-    explicit Plot( QVector<double> x  , QVector<double> y, QWidget *parent = nullptr);
+    explicit Plot(QVector<double> x, QVector<double> y, QWidget *parent = nullptr);
     ~Plot();
 private slots:
     void makePlot();

@@ -6,14 +6,14 @@
 #include <math.h>
 #include <vector>
 #include <QVBoxLayout>
-#include<QGroupBox>
-#include<QLabel>
+#include <QGroupBox>
+#include <QLabel>
 
 class FunctionObj
 {
 public:
     FunctionObj();
-    FunctionObj(QString inFuncStr, QString inMin, QString inMax , QVBoxLayout * warningLayout =nullptr);
+    FunctionObj(QString inFuncStr, QString inMin, QString inMax, QVBoxLayout *warningLayout = nullptr);
 
     //validation functions
     bool isValidMin();
@@ -21,11 +21,11 @@ public:
     bool isValidRange();
     int ValidateFunc();
     QStringList splitWithDelimiter();
-    QStringList splitWithDelimiter( QString funcStr );
+    QStringList splitWithDelimiter(QString funcStr);
     double handlePower(double x);
-    double handlePower( QString str,double x);
+    double handlePower(QString str, double x);
     double calculateResult(double x);
-    double calculateResult(QStringList list,double x);
+    double calculateResult(QStringList list, double x);
     void populateVectors();
     void populateVectorsV2();
     //helper functions
@@ -46,20 +46,20 @@ public:
     void setSMin(QString min);
     void setSMax(QString max);
     int setFuncStr(QString str);
+
 private:
-    void  clearLayout(QLayout *layout);
-    QVBoxLayout * warningLayout = nullptr;
-    QGroupBox * warningBox = new QGroupBox ("Warning") ;
+    void clearLayout(QLayout *layout);
+    QVBoxLayout *warningLayout = nullptr;
+    QGroupBox *warningBox = new QGroupBox("Warning");
     QVBoxLayout *vbox = new QVBoxLayout();
     QString funcStr;
     QStringList splitFunctionList;
     QString smin;
     QString smax;
-    QVector<double> x ;
+    QVector<double> x;
     QVector<double> y;
     double min;
     double max;
-
 };
 
 #endif // FUNCTIONOBJ_H
