@@ -1,6 +1,4 @@
-# Table of Contents
-
-- [Table of Contents](#table-of-contents)
+# [Table of Contents](#table-of-contents)
   - [**Description**](#description)
   - [**Overview of the application**](#overview-of-the-application)
   - [**Getting started**](#getting-started)
@@ -50,34 +48,39 @@ Built with QT in C++.
 <br>
 
 ## **Project Structure**
-      │   .gitignore
-      │   README.md
-      │   function_plotter.pro
-      │
-      ├───HelperClasses
-      │       functionobj.cpp
-      │       functionobj.h
-      │       plot.cpp
-      │       plot.h
-      │       qcustomplot.cpp
-      │       qcustomplot.h
-      │
-      ├───Main
-      │       main.cpp
-      │       mainwindow.cpp
-      │       mainwindow.h
-      │
-      ├───TestingHelperClasses
-      │   └───test_funcObj
-      │           .gitignore
-      │           test_funcObj.pro
-      │           test_funcObj.pro.user
-      │           tst_funcobj.cpp
-      │
-      └───ui
+
+    │   .gitignore
+    │   Function Plotter.zip
+    │   function_plotter.pro
+    │   README.md
+    │
+    ├───HelperClasses
+    │       functionobj.cpp
+    │       functionobj.h
+    │       plot.cpp
+    │       plot.h
+    │       qcustomplot.cpp
+    │       qcustomplot.h
+    │
+    ├───images
+    │       1.png
+    │       2.png
+    │
+    ├───Main
+    │       main.cpp
+    │       mainwindow.cpp
+    │       mainwindow.h
+    │
+    ├───TestingHelperClasses
+    │   └───test_funcObj
+    │           .gitignore
+    │           test_funcObj.pro
+    │           tst_funcobj.cpp
+    │
+    └───UI
             mainwindow.ui
             plot.ui
-
+            
 <br>
 
 #### **This structure has 4 main folders/directories :**
